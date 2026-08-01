@@ -1,6 +1,18 @@
 schema_version: 1
 fork: salma-remyx/mcp-recraft-server
-observed_landing_zones: []
+observed_landing_zones:
+- path: src/utils/
+  shape_tags:
+  - unclassified
+  confirmed_by:
+  - arxiv: 2607.19257v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "ListToolsRequestSchema handler in src/index.ts (setRequestHandler)\
+      \ \u2014 auditToolDescriptions runs on every tools/list request from the MCP\
+      \ client, and with RECRAFT_PROMPT_BUDGET_NORMALIZE=1 rewrites the"
+    branch: prompt-design-at-scale-how-format-instruction-count-and-cont
+    timestamp: '2026-08-01T02:41:20Z'
+  last_observed: '2026-08-01T02:41:20Z'
 rejected_shapes:
 - shape_tag: null
   reason_code: null
@@ -13,4 +25,4 @@ rejected_shapes:
   - arxiv: 2607.19257v1
     timestamp: '2026-07-30T03:30:06Z'
 coordination_signals: []
-last_updated: '2026-07-30T03:30:06Z'
+last_updated: '2026-08-01T02:41:20Z'
