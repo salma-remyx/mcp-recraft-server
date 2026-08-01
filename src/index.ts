@@ -18,6 +18,7 @@ import { replaceBackgroundHandler, replaceBackgroundTool } from "./tools/Replace
 import { crispUpscaleHandler, crispUpscaleTool } from "./tools/CrispUpscale"
 import { creativeUpscaleHandler, creativeUpscaleTool } from "./tools/CreativeUpscale"
 import { getUserHandler, getUserTool } from "./tools/GetUser"
+import { auditToolDescriptions } from "./utils/descriptionBudget"
 
 const server = new Server(
   {
@@ -66,18 +67,25 @@ const recraftServer = new RecraftServer(
 )
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
+  const tools = [
+    generateImageTool,
+    createStyleTool,
+    vectorizeImageTool,
+    imageToImageTool,
+    removeBackgroundTool,
+    replaceBackgroundTool,
+    crispUpscaleTool,
+    creativeUpscaleTool,
+    getUserTool,
+  ]
+  // Audit prompt-design budget (instruction count / context / format overhead)
+  // on the descriptions we hand the MCP client. Lossless compaction is opt-in
+  // via RECRAFT_PROMPT_BUDGET_NORMALIZE; debug logging via RECRAFT_PROMPT_BUDGET_DEBUG.
+  const audited = auditToolDescriptions(tools, {
+    normalize: process.env.RECRAFT_PROMPT_BUDGET_NORMALIZE === "1",
+  })
   return {
-    tools: [
-      generateImageTool,
-      createStyleTool,
-      vectorizeImageTool,
-      imageToImageTool,
-      removeBackgroundTool,
-      replaceBackgroundTool,
-      crispUpscaleTool,
-      creativeUpscaleTool,
-      getUserTool,
-    ],
+    tools: audited.tools,
   }
 })
 

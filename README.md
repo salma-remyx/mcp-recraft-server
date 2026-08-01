@@ -127,6 +127,8 @@ You can specify these parameters:
 - `RECRAFT_API_KEY`: mandatory parameter, your [Recraft API](https://www.recraft.ai/profile/api) key.
 - `IMAGE_STORAGE_DIRECTORY`: optional parameter, you can specify the directory in which all generated images will be stored. By default this directory is `$HOME_DIR/.mcp-recraft-server`. If `RECRAFT_REMOTE_RESULTS_STORAGE="1"`, the value of this parameter is ignored.
 - `RECRAFT_REMOTE_RESULTS_STORAGE`: optional parameter, you can set the value to `"1"`, in this case all generated images will be stored remotely and their URLs will be returned. Also, `IMAGE_STORAGE_DIRECTORY` will be ignored in this case.
+- `RECRAFT_PROMPT_BUDGET_NORMALIZE`: optional parameter, set to `"1"` to apply lossless compaction to the tool descriptions sent to the MCP client (strips redundant markdown list markers, reducing token overhead with no change to words or enumerated values). Off by default.
+- `RECRAFT_PROMPT_BUDGET_DEBUG`: optional parameter, set to `"1"` to log prompt-design budget warnings (instruction count, token/context pressure, and format overhead per tool description) to stderr. Off by default.
 
 # Tools
 
