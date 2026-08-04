@@ -23,6 +23,18 @@ observed_landing_zones:
     branch: tool-attention-is-all-you-need-dynamic-tool-gating-and-lazy-
     timestamp: '2026-08-04T03:31:33Z'
   last_observed: '2026-08-04T03:31:33Z'
+- path: src/tools/
+  shape_tags:
+  - unclassified
+  confirmed_by:
+  - arxiv: 2607.21412v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: generateImageHandler in src/tools/GenerateImage.ts and imageToImageHandler
+      in src/tools/ImageToImage.ts, both dispatched from the CallToolRequestSchema
+      handler in src/index.ts (the package bin/main en
+    branch: euclid-mcp-a-model-context-protocol-server-for-deterministic
+    timestamp: '2026-08-04T22:10:53Z'
+  last_observed: '2026-08-04T22:10:53Z'
 rejected_shapes:
 - shape_tag: null
   reason_code: null
@@ -37,4 +49,4 @@ rejected_shapes:
   - arxiv: 2509.18420v1
     timestamp: '2026-08-02T06:18:59Z'
 coordination_signals: []
-last_updated: '2026-08-04T03:31:33Z'
+last_updated: '2026-08-04T22:10:53Z'
