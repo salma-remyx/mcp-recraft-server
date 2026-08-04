@@ -18,6 +18,13 @@ import { replaceBackgroundHandler, replaceBackgroundTool } from "./tools/Replace
 import { crispUpscaleHandler, crispUpscaleTool } from "./tools/CrispUpscale"
 import { creativeUpscaleHandler, creativeUpscaleTool } from "./tools/CreativeUpscale"
 import { getUserHandler, getUserTool } from "./tools/GetUser"
+import {
+  getToolSchemaHandler,
+  getToolSchemaTool,
+  isToolAttentionEnabled,
+  summarizeToolEntry,
+  type ToolDefinition,
+} from "./utils/toolAttention"
 
 const server = new Server(
   {
@@ -65,21 +72,32 @@ const recraftServer = new RecraftServer(
   remoteResultsStorage ? undefined : process.env.IMAGE_STORAGE_DIRECTORY
 )
 
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: [
-      generateImageTool,
-      createStyleTool,
-      vectorizeImageTool,
-      imageToImageTool,
-      removeBackgroundTool,
-      replaceBackgroundTool,
-      crispUpscaleTool,
-      creativeUpscaleTool,
-      getUserTool,
-    ],
+const allTools: ToolDefinition[] = [
+  generateImageTool,
+  createStyleTool,
+  vectorizeImageTool,
+  imageToImageTool,
+  removeBackgroundTool,
+  replaceBackgroundTool,
+  crispUpscaleTool,
+  creativeUpscaleTool,
+  getUserTool,
+]
+
+// Phase 1 of lazy schema loading (Tool Attention): when the opt-in flag is set,
+// tools/list returns a compact per-tool summary plus an on-demand
+// get_tool_schema tool, so the model pays the full-schema token cost only for
+// tools it actually uses. With the flag unset, tools/list is unchanged.
+export const buildListToolsResponse = () => {
+  if (isToolAttentionEnabled()) {
+    return {
+      tools: [...allTools.map(summarizeToolEntry), getToolSchemaTool],
+    }
   }
-})
+  return { tools: allTools }
+}
+
+server.setRequestHandler(ListToolsRequestSchema, async () => buildListToolsResponse())
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
@@ -117,6 +135,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return await creativeUpscaleHandler(recraftServer, args ?? {})
     case getUserTool.name:
       return await getUserHandler(recraftServer, args ?? {})
+    case getToolSchemaTool.name:
+      return getToolSchemaHandler(allTools, args ?? {})
     default:
       return {
         content: [
@@ -136,4 +156,9 @@ const runServer = async () => {
   console.error("Recraft MCP Server running on stdio")
 }
 
-runServer().catch(console.error)
+// Only start the server when run as the process entry point. This keeps the
+// module importable for tests, which exercise the wiring via
+// buildListToolsResponse / getToolSchemaHandler rather than a live transport.
+if (require.main === module) {
+  runServer().catch(console.error)
+}
