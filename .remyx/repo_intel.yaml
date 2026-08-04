@@ -13,6 +13,16 @@ observed_landing_zones:
     branch: prompt-design-at-scale-how-format-instruction-count-and-cont
     timestamp: '2026-08-01T02:41:20Z'
   last_observed: '2026-08-01T02:41:20Z'
+- path: src/
+  shape_tags:
+  - unclassified
+  confirmed_by:
+  - arxiv: 2604.21816v1
+    mode: ''
+    call_site_specifics: ''
+    branch: tool-attention-is-all-you-need-dynamic-tool-gating-and-lazy-
+    timestamp: '2026-08-04T03:31:33Z'
+  last_observed: '2026-08-04T03:31:33Z'
 rejected_shapes:
 - shape_tag: null
   reason_code: null
@@ -27,4 +37,4 @@ rejected_shapes:
   - arxiv: 2509.18420v1
     timestamp: '2026-08-02T06:18:59Z'
 coordination_signals: []
-last_updated: '2026-08-02T06:18:59Z'
+last_updated: '2026-08-04T03:31:33Z'
