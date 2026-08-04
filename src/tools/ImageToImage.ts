@@ -4,6 +4,7 @@ import { imageDataToBlob } from "../utils"
 import z from "zod"
 import { RecraftServer } from "../RecraftServer"
 import { PARAMETERS, STYLE_PRESERVATION_WARNING } from "../utils/parameters"
+import { styleConstraintsErrorOrNull } from "../utils/styleConstraint"
 import { downloadImage } from "../utils/download"
 
 export const imageToImageTool = {
@@ -56,6 +57,11 @@ export const imageToImageHandler = async (server: RecraftServer, args: Record<st
       model: z.nativeEnum(TransformModel).optional(),
       numberOfImages: z.number().optional()
     }).parse(args)
+
+    const styleError = styleConstraintsErrorOrNull({ model, style, substyle, styleID })
+    if (styleError) {
+      return styleError
+    }
 
     const imageData = await downloadImage(imageURI)
 
