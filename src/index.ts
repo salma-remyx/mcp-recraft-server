@@ -33,6 +33,8 @@ const server = new Server(
 
 const remoteResultsStorage = process.env.RECRAFT_REMOTE_RESULTS_STORAGE === "1" || process.env.RECRAFT_REMOTE_RESULTS_STORAGE === "true"
 
+const textCallMode = process.env.RECRAFT_TEXTCALL_MODE === "1" || process.env.RECRAFT_TEXTCALL_MODE === "true"
+
 let homeDir: string
 try {
   homeDir = os.homedir()
@@ -62,7 +64,8 @@ const api = createRecraftApi(apiConfig)
 
 const recraftServer = new RecraftServer(
   api,
-  remoteResultsStorage ? undefined : process.env.IMAGE_STORAGE_DIRECTORY
+  remoteResultsStorage ? undefined : process.env.IMAGE_STORAGE_DIRECTORY,
+  textCallMode,
 )
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {

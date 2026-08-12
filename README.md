@@ -145,3 +145,9 @@ In this MCP you can use the following tools:
 | `get_user` | Get information about the user and left balance |  |  |
 
 You can find the detailed explanation of tools, their parameters, and prices in [Recraft API docs](https://recraft.ai/docs).
+
+# Image result scaffold (TextCall)
+
+Every image tool result includes a textual scaffold — the structured metadata (dimensions, format, storage location, and the model's revised prompt) describing what was produced. This mirrors the insight that the structured text around a tool call is the load-bearing signal a reasoning model uses, beyond the returned pixels themselves. The scaffold is always present, so the model can reason over the result even when preview images are downsampled away by the message-size limit.
+
+- `RECRAFT_TEXTCALL_MODE`: optional parameter, set to `"1"` to opt into TextCall mode. When enabled, the low-quality preview pixels are omitted from results and replaced with an `[Image output skipped]` placeholder per image, while the textual scaffold is still emitted. Original images remain available at their returned path/URL. This reduces result size and avoids round-tripping preview bytes when the scaffold is sufficient for the task. Default is off (previews are returned as before). Adapted from "Thinking With Tools, Not With Pixels: Tool Calls as Text Scaffolds for Visual Reasoning".
