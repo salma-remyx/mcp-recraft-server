@@ -145,3 +145,9 @@ In this MCP you can use the following tools:
 | `get_user` | Get information about the user and left balance |  |  |
 
 You can find the detailed explanation of tools, their parameters, and prices in [Recraft API docs](https://recraft.ai/docs).
+
+# Structured prompt guidance
+
+The `prompt` parameter description now steers the model toward *structured* prompts that combine **semantic annotations** (subject, colors, lighting, mood, medium, texture) with **geometric annotations** (composition, camera angle, layout, position, count). Prompts richer in both annotation types tend to generate more faithfully.
+
+A companion utility in `src/utils/promptStructure.ts` scores a prompt's structured-language richness along these two axes, so prompt quality can be measured rather than only described. This is an adapted port of *Scaling Properties of Text Conditioning in Visual Generation*, which finds that generation fidelity scales with the amount of structured language in a prompt.

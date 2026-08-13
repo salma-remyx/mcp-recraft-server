@@ -2,6 +2,7 @@ import { ImageSize } from "../api/models/ImageSize"
 import { ImageStyle } from "../api/models/ImageStyle"
 import { ImageSubStyle } from "../api/models/ImageSubStyle"
 import { TransformModel } from "../api/models/TransformModel"
+import { STRUCTURED_PROMPT_GUIDANCE } from "./promptStructure"
 
 export const PARAMETERS = {
   imageSize: {
@@ -69,7 +70,8 @@ export const PARAMETERS = {
   promptSimple: {
     type: "string",
     description: "Text prompt of the image you want to generate.\n" +
-      "Its length should be from 1 to 1024 characters."
+      "Its length should be from 1 to 1024 characters.\n" +
+      STRUCTURED_PROMPT_GUIDANCE,
   },
 
   imageURI: {
