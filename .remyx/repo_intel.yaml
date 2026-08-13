@@ -12,7 +12,14 @@ observed_landing_zones:
       \ client, and with RECRAFT_PROMPT_BUDGET_NORMALIZE=1 rewrites the"
     branch: prompt-design-at-scale-how-format-instruction-count-and-cont
     timestamp: '2026-08-01T02:41:20Z'
-  last_observed: '2026-08-01T02:41:20Z'
+  - arxiv: 2607.29679v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: '`PARAMETERS.promptSimple` in src/utils/parameters.ts (a
+      pre-existing module, edited to import `STRUCTURED_PROMPT_GUIDANCE`); that object
+      is consumed as the `prompt` schema param by src/tools/GenerateI'
+    branch: scaling-properties-of-text-conditioning-in-visual-generation
+    timestamp: '2026-08-13T20:45:11Z'
+  last_observed: '2026-08-13T20:45:11Z'
 - path: src/
   shape_tags:
   - unclassified
@@ -60,4 +67,4 @@ rejected_shapes:
   - arxiv: 2607.21412v1
     timestamp: '2026-08-08T09:41:29Z'
 coordination_signals: []
-last_updated: '2026-08-12T22:37:16Z'
+last_updated: '2026-08-13T20:45:11Z'
