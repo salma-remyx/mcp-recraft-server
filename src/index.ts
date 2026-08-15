@@ -8,6 +8,7 @@ import { generateImageHandler, generateImageTool } from "./tools/GenerateImage"
 import { imageToImageHandler, imageToImageTool } from "./tools/ImageToImage"
 import { Server } from "@modelcontextprotocol/sdk/server/index.js"
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js"
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js"
 import { RecraftServer } from "./RecraftServer"
 import path from "path"
 import os from "os"
@@ -18,6 +19,7 @@ import { replaceBackgroundHandler, replaceBackgroundTool } from "./tools/Replace
 import { crispUpscaleHandler, crispUpscaleTool } from "./tools/CrispUpscale"
 import { creativeUpscaleHandler, creativeUpscaleTool } from "./tools/CreativeUpscale"
 import { getUserHandler, getUserTool } from "./tools/GetUser"
+import { paramCausedBy, withToolPlayHints, ToolPlayMemory } from "./utils/toolPlayGuidance"
 
 const server = new Server(
   {
@@ -65,19 +67,27 @@ const recraftServer = new RecraftServer(
   remoteResultsStorage ? undefined : process.env.IMAGE_STORAGE_DIRECTORY
 )
 
+// Memory of tool play: every tool call is recorded as a trial and its
+// outcome is folded back into the tool descriptions served on the next
+// tools/list request.
+const toolPlay = new ToolPlayMemory()
+
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
-    tools: [
-      generateImageTool,
-      createStyleTool,
-      vectorizeImageTool,
-      imageToImageTool,
-      removeBackgroundTool,
-      replaceBackgroundTool,
-      crispUpscaleTool,
-      creativeUpscaleTool,
-      getUserTool,
-    ],
+    tools: withToolPlayHints(
+      [
+        generateImageTool,
+        createStyleTool,
+        vectorizeImageTool,
+        imageToImageTool,
+        removeBackgroundTool,
+        replaceBackgroundTool,
+        crispUpscaleTool,
+        creativeUpscaleTool,
+        getUserTool,
+      ],
+      toolPlay.trials,
+    ),
   }
 })
 
@@ -98,36 +108,49 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   const {params: {name: tool, arguments: args}} = request
 
-  switch (tool) {
-    case generateImageTool.name:
-      return await generateImageHandler(recraftServer, args ?? {})
-    case createStyleTool.name:
-      return await createStyleHandler(recraftServer, args ?? {})
-    case vectorizeImageTool.name:
-      return await vectorizeImageHandler(recraftServer, args ?? {})
-    case imageToImageTool.name:
-      return await imageToImageHandler(recraftServer, args ?? {})
-    case removeBackgroundTool.name:
-      return await removeBackgroundHandler(recraftServer, args ?? {})
-    case replaceBackgroundTool.name:
-      return await replaceBackgroundHandler(recraftServer, args ?? {})
-    case crispUpscaleTool.name:
-      return await crispUpscaleHandler(recraftServer, args ?? {})
-    case creativeUpscaleTool.name:
-      return await creativeUpscaleHandler(recraftServer, args ?? {})
-    case getUserTool.name:
-      return await getUserHandler(recraftServer, args ?? {})
-    default:
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Unknown tool: ${tool}`
-          }
-        ],
-        isError: true
-      }
+  const dispatch = async (): Promise<CallToolResult> => {
+    switch (tool) {
+      case generateImageTool.name:
+        return await generateImageHandler(recraftServer, args ?? {})
+      case createStyleTool.name:
+        return await createStyleHandler(recraftServer, args ?? {})
+      case vectorizeImageTool.name:
+        return await vectorizeImageHandler(recraftServer, args ?? {})
+      case imageToImageTool.name:
+        return await imageToImageHandler(recraftServer, args ?? {})
+      case removeBackgroundTool.name:
+        return await removeBackgroundHandler(recraftServer, args ?? {})
+      case replaceBackgroundTool.name:
+        return await replaceBackgroundHandler(recraftServer, args ?? {})
+      case crispUpscaleTool.name:
+        return await crispUpscaleHandler(recraftServer, args ?? {})
+      case creativeUpscaleTool.name:
+        return await creativeUpscaleHandler(recraftServer, args ?? {})
+      case getUserTool.name:
+        return await getUserHandler(recraftServer, args ?? {})
+      default:
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Unknown tool: ${tool}`
+            }
+          ],
+          isError: true
+        }
+    }
   }
+
+  // Record the trial so the next tools/list response can carry guidance
+  // derived from it (see withToolPlayHints above).
+  const result = await dispatch()
+  toolPlay.record({
+    tool: tool,
+    params: Object.keys(args ?? {}),
+    outcome: result.isError ? "error" : "success",
+    failedParam: result.isError ? paramCausedBy(result.content) : undefined,
+  })
+  return result
 })
 
 const runServer = async () => {

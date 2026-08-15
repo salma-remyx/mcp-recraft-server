@@ -145,3 +145,7 @@ In this MCP you can use the following tools:
 | `get_user` | Get information about the user and left balance |  |  |
 
 You can find the detailed explanation of tools, their parameters, and prices in [Recraft API docs](https://recraft.ai/docs).
+
+## Tool play notes
+
+The server records the outcome of every tool call and folds what it learned back into the tool descriptions: after a call fails because of a specific parameter (for example, a `style` that is unavailable for the requested model), the next `tools/list` response carries a short note on that tool warning about it, and combinations of parameters that worked well are noted too. Notes are kept per session and bounded, so descriptions stay close to their handcrafted versions. This behavior needs no configuration and can be observed by listing tools again after a failed call.
