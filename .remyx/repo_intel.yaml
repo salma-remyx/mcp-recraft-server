@@ -19,7 +19,14 @@ observed_landing_zones:
       is consumed as the `prompt` schema param by src/tools/GenerateI'
     branch: scaling-properties-of-text-conditioning-in-visual-generation
     timestamp: '2026-08-13T20:45:11Z'
-  last_observed: '2026-08-13T20:45:11Z'
+  - arxiv: 2503.14432v2
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "src/index.ts \u2014 both pre-existing MCP request handlers:\
+      \ the CallToolRequestSchema handler records each trial after dispatch(), and\
+      \ the ListToolsRequestSchema handler passes the tool list through withTo"
+    branch: play2prompt-zero-shot-tool-instruction-optimization-for-llm-
+    timestamp: '2026-08-15T12:51:01Z'
+  last_observed: '2026-08-15T12:51:01Z'
 - path: src/
   shape_tags:
   - unclassified
@@ -67,4 +74,4 @@ rejected_shapes:
   - arxiv: 2607.21412v1
     timestamp: '2026-08-08T09:41:29Z'
 coordination_signals: []
-last_updated: '2026-08-13T20:45:11Z'
+last_updated: '2026-08-15T12:51:01Z'
