@@ -26,7 +26,14 @@ observed_landing_zones:
       \ the ListToolsRequestSchema handler passes the tool list through withTo"
     branch: play2prompt-zero-shot-tool-instruction-optimization-for-llm-
     timestamp: '2026-08-15T12:51:01Z'
-  last_observed: '2026-08-15T12:51:01Z'
+  - arxiv: 2608.12290v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "imageToImageHandler return path in src/tools/ImageToImage.ts:76-82,\
+      \ dispatched from the pre-existing CallToolRequest switch in src/index.ts:108-109\
+      \ \u2014 the MCP server's main entry point (application-sha"
+    branch: beyond-trial-and-error-agentic-optimization-for-image-to-vid
+    timestamp: '2026-08-22T15:04:00Z'
+  last_observed: '2026-08-22T15:04:00Z'
 - path: src/
   shape_tags:
   - unclassified
@@ -74,4 +81,4 @@ rejected_shapes:
   - arxiv: 2607.21412v1
     timestamp: '2026-08-08T09:41:29Z'
 coordination_signals: []
-last_updated: '2026-08-15T12:51:01Z'
+last_updated: '2026-08-22T15:04:00Z'
