@@ -127,6 +127,14 @@ You can specify these parameters:
 - `RECRAFT_API_KEY`: mandatory parameter, your [Recraft API](https://www.recraft.ai/profile/api) key.
 - `IMAGE_STORAGE_DIRECTORY`: optional parameter, you can specify the directory in which all generated images will be stored. By default this directory is `$HOME_DIR/.mcp-recraft-server`. If `RECRAFT_REMOTE_RESULTS_STORAGE="1"`, the value of this parameter is ignored.
 - `RECRAFT_REMOTE_RESULTS_STORAGE`: optional parameter, you can set the value to `"1"`, in this case all generated images will be stored remotely and their URLs will be returned. Also, `IMAGE_STORAGE_DIRECTORY` will be ignored in this case.
+- `RECRAFT_ADHERENCE_FEEDBACK`: optional parameter, set to `"0"` to disable the prompt adherence feedback described below. Enabled by default.
+
+## Prompt adherence feedback
+
+When `image_to_image` returns, the response can carry a short adherence panel: an adherence score split into a semantic part (does the prompt name concrete, non-conflicting subjects?) and an artifact part (does it risk garbled text, duplicated limbs, or unintended objects?), plus concrete refinement advice for the prompt and the `strength` value.
+
+The intent is to make refinement guided rather than a blind resample: instead of regenerating with an unchanged prompt and hoping for a better draw, the panel tells you which part of the prompt to fix and which `strength` band to try next. Checks that need vision are emitted as questions the MCP client can answer against the returned preview, so the judging model stays on the client side.
+
 
 # Tools
 

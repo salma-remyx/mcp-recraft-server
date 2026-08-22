@@ -5,6 +5,7 @@ import z from "zod"
 import { RecraftServer } from "../RecraftServer"
 import { PARAMETERS, STYLE_PRESERVATION_WARNING } from "../utils/parameters"
 import { downloadImage } from "../utils/download"
+import { appendAdherenceFeedback, assessImageToImagePrompt, formatAdherenceFeedback, isAdherenceFeedbackEnabled } from "../utils/adherence"
 
 export const imageToImageTool = {
   name: "image_to_image",
@@ -72,7 +73,14 @@ export const imageToImageHandler = async (server: RecraftServer, args: Record<st
       expire: server.isLocalResultsStorage,
     })
 
-    return await server.transformGenerateImageResponseToCallToolResult(result)
+    const callToolResult = await server.transformGenerateImageResponseToCallToolResult(result)
+
+    if (isAdherenceFeedbackEnabled()) {
+      const assessment = assessImageToImagePrompt({ prompt, strength, style, substyle, styleID })
+      return appendAdherenceFeedback(callToolResult, formatAdherenceFeedback(assessment))
+    }
+
+    return callToolResult
   } catch (error) {
     return {
       content: [
